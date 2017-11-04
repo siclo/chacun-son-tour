@@ -52,7 +52,11 @@ update msg model =
             { model | startTime = Just time } ! []
 
         Tick time ->
-            { model | currentTime = Just time, timeLeft = timeLeft model } ! []
+            { model
+                | currentTime = Just time
+                , timeLeft = timeLeft model
+            }
+                ! []
 
 
 computeTimeLeft : Time -> Time -> Time -> Time
