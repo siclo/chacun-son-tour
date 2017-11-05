@@ -38,7 +38,7 @@ init =
             , currentFaceIndex = 0
             }
     in
-        initialModel ! [ getStartTime, choseStartFace initialModel ]
+        initialModel ! [ getStartTime ]
 
 
 getStartTime : Cmd Msg
@@ -46,9 +46,19 @@ getStartTime =
     Task.perform SetStartTime Time.now
 
 
-choseStartFace : Model -> Cmd Msg
-choseStartFace model =
-    Random.generate StartFaceIndex (Random.int 0 (List.length model.faces))
+choseStartFace : Model -> Time -> Int
+choseStartFace model time =
+    let
+        generator =
+            Random.int 0 (List.length model.faces - 1)
+
+        seed =
+            Random.initialSeed (round time)
+
+        ( result, _ ) =
+            Random.step generator seed
+    in
+        result
 
 
 
@@ -58,7 +68,6 @@ choseStartFace model =
 type Msg
     = NoOp
     | SetStartTime Time
-    | StartFaceIndex Int
     | Tick Time
 
 
@@ -69,10 +78,11 @@ update msg model =
             model ! []
 
         SetStartTime time ->
-            { model | startTime = Just time } ! []
-
-        StartFaceIndex faceIndex ->
-            { model | currentFaceIndex = faceIndex } ! []
+            { model
+                | startTime = Just time
+                , currentFaceIndex = choseStartFace model time
+            }
+                ! []
 
         Tick time ->
             let
