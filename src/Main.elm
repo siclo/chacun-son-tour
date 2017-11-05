@@ -5,7 +5,7 @@ import Html.Attributes exposing (src)
 import Svg
 import Svg.Attributes
 import Task
-import Time exposing (Time, second, inSeconds)
+import Time exposing (Time, millisecond, inSeconds)
 import List.Extra
 
 
@@ -26,8 +26,8 @@ init : ( Model, Cmd Msg )
 init =
     { startTime = Nothing
     , currentTime = Nothing
-    , allocatedTime = 5 * Time.second
-    , timeLeft = 5 * Time.second
+    , allocatedTime = 50 * Time.second
+    , timeLeft = 50 * Time.second
     , faces =
         [ "Justin.png"
         , "Gabriel.png"
@@ -114,7 +114,7 @@ resetTimeLeft model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Time.every second Tick
+    Time.every millisecond Tick
 
 
 
@@ -125,8 +125,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ faceImage model
-        , div [] [ text ("Time left: " ++ (model.timeLeft |> Time.inSeconds |> toString)) ]
-        , hourglass model
+        , div [] [ hourglass model ]
         ]
 
 
@@ -147,7 +146,7 @@ hourglass model =
         Svg.svg
             [ Svg.Attributes.viewBox "0 0 100 100", Svg.Attributes.width "300px" ]
             [ Svg.rect
-                [ Svg.Attributes.x "0"
+                [ Svg.Attributes.x "40"
                 , Svg.Attributes.y "0"
                 , Svg.Attributes.width "20"
                 , Svg.Attributes.height "100"
@@ -155,7 +154,7 @@ hourglass model =
                 ]
                 []
             , Svg.rect
-                [ Svg.Attributes.x "0"
+                [ Svg.Attributes.x "40"
                 , Svg.Attributes.y (toString ((1 - timeLeftRatio) * 100))
                 , Svg.Attributes.width "20"
                 , Svg.Attributes.height (toString (timeLeftRatio * 100))
