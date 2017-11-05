@@ -24,8 +24,8 @@ init : ( Model, Cmd Msg )
 init =
     { startTime = Nothing
     , currentTime = Nothing
-    , allocatedTime = 5 * Time.minute
-    , timeLeft = 5 * Time.minute
+    , allocatedTime = 5 * Time.second
+    , timeLeft = 5 * Time.second
     , faces =
         [ "Justin.png"
         , "Gabriel.png"
@@ -83,13 +83,23 @@ timeLeft model =
 
 handleTimeout : Model -> ( Model, Cmd Msg )
 handleTimeout model =
-    changeFace model
-        ! []
+    model
+        |> changeFace
+        |> resetTimeLeft
+        |> flip (!) []
 
 
 changeFace : Model -> Model
 changeFace model =
     { model | currentFaceIndex = (model.currentFaceIndex + 1) % List.length model.faces }
+
+
+resetTimeLeft : Model -> Model
+resetTimeLeft model =
+    { model
+        | timeLeft = model.allocatedTime
+        , startTime = model.currentTime
+    }
 
 
 
@@ -117,7 +127,7 @@ faceImage : Model -> Html Msg
 faceImage model =
     let
         faceUrl =
-            Maybe.withDefault "" (List.head model.faces)
+            Maybe.withDefault "" (List.Extra.getAt model.currentFaceIndex model.faces)
     in
         img [ src faceUrl ] []
 
