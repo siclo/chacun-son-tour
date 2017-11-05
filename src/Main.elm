@@ -138,19 +138,20 @@ faceImage model =
 hourglass model =
     Svg.svg
         [ Svg.Attributes.viewBox "0 0 100 100", Svg.Attributes.width "300px" ]
-        [ Svg.circle
-            [ Svg.Attributes.cx "50"
-            , Svg.Attributes.cy "50"
-            , Svg.Attributes.r "45"
-            , Svg.Attributes.fill "#0B79CE"
-            ]
-            []
-        , Svg.rect
+        [ Svg.rect
             [ Svg.Attributes.x "0"
             , Svg.Attributes.y "0"
             , Svg.Attributes.width "20"
             , Svg.Attributes.height "100"
-            , Svg.Attributes.fill "#BB00CE"
+            , Svg.Attributes.fill "grey"
+            ]
+            []
+        , Svg.rect
+            [ Svg.Attributes.x "0"
+            , Svg.Attributes.y "70"
+            , Svg.Attributes.width "20"
+            , Svg.Attributes.height "30"
+            , Svg.Attributes.fill "blue"
             ]
             []
         ]
