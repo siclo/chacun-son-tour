@@ -2,6 +2,8 @@ module Main exposing (..)
 
 import Html exposing (Html, text, div, img)
 import Html.Attributes exposing (src)
+import Svg
+import Svg.Attributes
 import Task
 import Time exposing (Time, second, inSeconds)
 import List.Extra
@@ -120,6 +122,7 @@ view model =
     div []
         [ faceImage model
         , div [] [ text ("Time left: " ++ (model.timeLeft |> Time.inSeconds |> toString)) ]
+        , hourglass model
         ]
 
 
@@ -130,6 +133,27 @@ faceImage model =
             Maybe.withDefault "" (List.Extra.getAt model.currentFaceIndex model.faces)
     in
         img [ src faceUrl ] []
+
+
+hourglass model =
+    Svg.svg
+        [ Svg.Attributes.viewBox "0 0 100 100", Svg.Attributes.width "300px" ]
+        [ Svg.circle
+            [ Svg.Attributes.cx "50"
+            , Svg.Attributes.cy "50"
+            , Svg.Attributes.r "45"
+            , Svg.Attributes.fill "#0B79CE"
+            ]
+            []
+        , Svg.rect
+            [ Svg.Attributes.x "0"
+            , Svg.Attributes.y "0"
+            , Svg.Attributes.width "20"
+            , Svg.Attributes.height "100"
+            , Svg.Attributes.fill "#BB00CE"
+            ]
+            []
+        ]
 
 
 
