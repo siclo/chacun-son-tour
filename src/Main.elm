@@ -2,11 +2,12 @@ module Main exposing (..)
 
 import Html exposing (Html, text, div, img)
 import Html.Attributes exposing (src)
+import List.Extra
+import Random
 import Svg
 import Svg.Attributes
 import Task
 import Time exposing (Time, millisecond, second, inSeconds)
-import List.Extra
 
 
 ---- MODEL ----
@@ -24,22 +25,30 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    { startTime = Nothing
-    , currentTime = Nothing
-    , allocatedTime = 5 * Time.minute
-    , timeLeft = 5 * Time.minute
-    , faces =
-        [ "Justin.png"
-        , "Gabriel.png"
-        ]
-    , currentFaceIndex = 0
-    }
-        ! [ getStartTime ]
+    let
+        initialModel =
+            { startTime = Nothing
+            , currentTime = Nothing
+            , allocatedTime = 5 * Time.minute
+            , timeLeft = 5 * Time.minute
+            , faces =
+                [ "Justin.png"
+                , "Gabriel.png"
+                ]
+            , currentFaceIndex = 0
+            }
+    in
+        initialModel ! [ getStartTime, choseStartFace initialModel ]
 
 
 getStartTime : Cmd Msg
 getStartTime =
     Task.perform SetStartTime Time.now
+
+
+choseStartFace : Model -> Cmd Msg
+choseStartFace model =
+    Random.generate StartFaceIndex (Random.int 0 (List.length model.faces))
 
 
 
@@ -49,6 +58,7 @@ getStartTime =
 type Msg
     = NoOp
     | SetStartTime Time
+    | StartFaceIndex Int
     | Tick Time
 
 
@@ -60,6 +70,9 @@ update msg model =
 
         SetStartTime time ->
             { model | startTime = Just time } ! []
+
+        StartFaceIndex faceIndex ->
+            { model | currentFaceIndex = faceIndex } ! []
 
         Tick time ->
             let
