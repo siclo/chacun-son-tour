@@ -5,7 +5,7 @@ import Html.Attributes exposing (src)
 import Svg
 import Svg.Attributes
 import Task
-import Time exposing (Time, millisecond, inSeconds)
+import Time exposing (Time, millisecond, second, inSeconds)
 import List.Extra
 
 
@@ -26,8 +26,8 @@ init : ( Model, Cmd Msg )
 init =
     { startTime = Nothing
     , currentTime = Nothing
-    , allocatedTime = 50 * Time.second
-    , timeLeft = 50 * Time.second
+    , allocatedTime = 5 * Time.minute
+    , timeLeft = 5 * Time.minute
     , faces =
         [ "Justin.png"
         , "Gabriel.png"
@@ -114,7 +114,7 @@ resetTimeLeft model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Time.every millisecond Tick
+    Time.every second Tick
 
 
 
