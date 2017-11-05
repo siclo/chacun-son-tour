@@ -104,7 +104,7 @@ resetTimeLeft : Model -> Model
 resetTimeLeft model =
     { model
         | timeLeft = model.allocatedTime
-        , startTime = model.currentTime
+        , startTime = Maybe.map2 (+) model.currentTime (Just model.timeLeft)
     }
 
 
