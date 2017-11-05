@@ -62,25 +62,29 @@ update msg model =
             { model | startTime = Just time } ! []
 
         Tick time ->
-            if timeLeft model <= 0 then
-                handleTimeout model
-            else
-                { model
-                    | currentTime = Just time
-                    , timeLeft = timeLeft model
-                }
-                    ! []
+            let
+                newTimeLeft =
+                    timeLeft model.allocatedTime model.startTime (Just time)
+            in
+                if newTimeLeft <= 0 then
+                    handleTimeout model
+                else
+                    { model
+                        | currentTime = Just time
+                        , timeLeft = newTimeLeft
+                    }
+                        ! []
+
+
+timeLeft : Time -> Maybe Time -> Maybe Time -> Time
+timeLeft allocatedTime startTime currentTime =
+    Maybe.map3 computeTimeLeft (Just allocatedTime) startTime currentTime
+        |> Maybe.withDefault allocatedTime
 
 
 computeTimeLeft : Time -> Time -> Time -> Time
 computeTimeLeft allocatedTime startTime currentTime =
     allocatedTime + startTime - currentTime
-
-
-timeLeft : Model -> Time
-timeLeft model =
-    Maybe.map3 computeTimeLeft (Just model.allocatedTime) model.startTime model.currentTime
-        |> Maybe.withDefault model.allocatedTime
 
 
 handleTimeout : Model -> ( Model, Cmd Msg )
@@ -136,25 +140,29 @@ faceImage model =
 
 
 hourglass model =
-    Svg.svg
-        [ Svg.Attributes.viewBox "0 0 100 100", Svg.Attributes.width "300px" ]
-        [ Svg.rect
-            [ Svg.Attributes.x "0"
-            , Svg.Attributes.y "0"
-            , Svg.Attributes.width "20"
-            , Svg.Attributes.height "100"
-            , Svg.Attributes.fill "grey"
+    let
+        timeLeftRatio =
+            model.timeLeft / model.allocatedTime
+    in
+        Svg.svg
+            [ Svg.Attributes.viewBox "0 0 100 100", Svg.Attributes.width "300px" ]
+            [ Svg.rect
+                [ Svg.Attributes.x "0"
+                , Svg.Attributes.y "0"
+                , Svg.Attributes.width "20"
+                , Svg.Attributes.height "100"
+                , Svg.Attributes.fill "grey"
+                ]
+                []
+            , Svg.rect
+                [ Svg.Attributes.x "0"
+                , Svg.Attributes.y (toString ((1 - timeLeftRatio) * 100))
+                , Svg.Attributes.width "20"
+                , Svg.Attributes.height (toString (timeLeftRatio * 100))
+                , Svg.Attributes.fill "blue"
+                ]
+                []
             ]
-            []
-        , Svg.rect
-            [ Svg.Attributes.x "0"
-            , Svg.Attributes.y "70"
-            , Svg.Attributes.width "20"
-            , Svg.Attributes.height "30"
-            , Svg.Attributes.fill "blue"
-            ]
-            []
-        ]
 
 
 
